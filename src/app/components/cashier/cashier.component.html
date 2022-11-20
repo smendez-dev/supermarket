@@ -1,0 +1,52 @@
+<h1>{{ pageTitle }}</h1>
+
+<div class="table-responsive">
+  <article class="table-header">
+    <div>
+      <mat-form-field class="product-search" appearance="standard">
+        <mat-label>Filtrar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Búsqueda por PLU, EAN o Descripción" #input>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="cartProducts.length === 0" (click)="viewCart()">
+        Ver Carrito
+      </button>
+    </div>
+  </article>
+  <table mat-table [dataSource]="dataSource">
+    <ng-container [matColumnDef]="col.key" *ngFor="let col of columnsSchema">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ col.label }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div [ngSwitch]="col.type" *ngIf="!element.isEdit">
+          <div class="btn-edit" *ngSwitchCase="'isEdit'">
+            <button
+              mat-button
+              class="button-remove"
+              (click)="addToCart(element)"
+            >
+              <mat-icon aria-hidden="false" fontIcon="add"></mat-icon>
+            </button>
+          </div>
+          <span *ngSwitchDefault>
+            {{ col.key === 'area' ? element[col.key].nombre : element[col.key] | notApplicable }}
+          </span>
+        </div>
+        <div [ngSwitch]="col.type" *ngIf="element.isEdit">
+          <div *ngSwitchCase="'isSelected'"></div>
+          <mat-form-field class="form-input" *ngSwitchDefault>
+            <input
+              matInput
+              [required]="col.required"
+              [pattern]="col.pattern"
+              [type]="col.type"
+              [(ngModel)]="element[col.key]"
+            />
+          </mat-form-field>
+        </div>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>
